@@ -3,6 +3,7 @@
 ## 项目概述
 
 本项目实现了一个端到端加密（End-to-End Encryption, E2EE）聊天应用，使用**完整版的Signal协议**进行消息加密。这是被WhatsApp、Signal、Facebook Messenger等主流即时通讯应用采用的加密方案。
+演示视频：https://www.bilibili.com/video/BV1YTiuBKEf3/?spm_id_from=333.1387.list.card_archive.click&vd_source=fec8c467eaf3b6a6802b38e9c75868e1
 
 ### 核心特性
 
