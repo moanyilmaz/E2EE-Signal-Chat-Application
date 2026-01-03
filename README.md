@@ -53,7 +53,7 @@ X3DH 是 Signal Protocol 的密钥协商协议，允许两个用户在一方离�
 Alice (Initiator)                                      Bob (Responder)
 ─────────────────                                      ─────────────────
 IKA (Identity Key)                                     IKB (Identity Key)
-EKA (Ephemeral Key) ──生成──                           SPKB (Signed Pre-Key)
+EKA (Ephemeral Key)           ──生成──                 SPKB (Signed Pre-Key)
                                                        OPKB (One-Time Pre-Key)
 
                     X3DH 四重 Diffie-Hellman
@@ -74,34 +74,34 @@ Double Ratchet 结合了两种棘轮机制，提供完美前向保密和入侵�
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                    DOUBLE RATCHET ALGORITHM                          │
+│                    DOUBLE RATCHET ALGORITHM                         │
 ├─────────────────────────────────────────────────────────────────────┤
-│                                                                       │
-│   Root Key (RK)                                                      │
-│       │                                                              │
-│       ├──────[ DH Ratchet ]──────┐                                   │
-│       │                          │                                   │
-│       │    DH Output = ECDH(DHs, DHr)                                │
-│       │         │                                                    │
-│       │         ▼                                                    │
-│       │    ┌─────────┐                                               │
-│       └───▶│  HKDF   │───▶ New RK                                    │
-│            └────┬────┘                                               │
-│                 │                                                    │
-│                 ▼                                                    │
-│         Chain Key (CK)                                               │
-│              │                                                       │
-│              ├──────[ Symmetric Ratchet ]──────┐                     │
-│              │                                  │                     │
-│              ▼                                  ▼                     │
-│     ┌───────────────┐                  ┌───────────────┐             │
-│     │ CK = HMAC(CK) │                  │ MK = HMAC(CK) │             │
-│     └───────┬───────┘                  └───────┬───────┘             │
-│             │                                   │                     │
-│             ▼                                   ▼                     │
-│       New Chain Key                       Message Key                │
-│                                           (用于 AES-GCM)             │
-│                                                                       │
+│                                                                     │
+│   Root Key (RK)                                                     │
+│       │                                                             │
+│       ├──────[ DH Ratchet ]──────┐                                  │
+│       │                          │                                  │
+│       │    DH Output = ECDH(DHs, DHr)                               │
+│       │         │                                                   │
+│       │         ▼                                                   │
+│       │    ┌─────────┐                                              │
+│       └───▶│  HKDF   │───▶ New RK                                  │
+│            └────┬────┘                                              │
+│                 │                                                   │
+│                 ▼                                                   │
+│         Chain Key (CK)                                              │
+│              │                                                      │
+│              ├──────[ Symmetric Ratchet ]──────┐                    │
+│              │                                 │                    │
+│              ▼                                 ▼                    │
+│     ┌───────────────┐                  ┌───────────────┐            │
+│     │ CK = HMAC(CK) │                  │ MK = HMAC(CK) │            │
+│     └───────┬───────┘                  └───────┬───────┘            │
+│             │                                  │                    │
+│             ▼                                  ▼                    │
+│       New Chain Key                       Message Key               │
+│                                           (用于 AES-GCM)            │
+│                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
 
 特性:
@@ -117,27 +117,27 @@ Double Ratchet 结合了两种棘轮机制，提供完美前向保密和入侵�
 │   Alice     │                  │   Server    │                  │    Bob      │
 └──────┬──────┘                  └──────┬──────┘                  └──────┬──────┘
        │                                │                                │
-       │                                │ 1. PREKEY_BUNDLE_UPLOAD       │
-       │                                │ (IKB, SPKB, OPKs, Signature)  │
+       │                                │ 1. PREKEY_BUNDLE_UPLOAD        │
+       │                                │ (IKB, SPKB, OPKs, Signature)   │
        │                                │<───────────────────────────────│
        │                                │                                │
-       │ 2. GET_PREKEY_BUNDLE(Bob)     │                                │
-       │──────────────────────────────>│                                │
+       │ 2. GET_PREKEY_BUNDLE(Bob)      │                                │
+       │──────────────────────────────> │                                │
        │                                │                                │
-       │ 3. PREKEY_BUNDLE_RESPONSE     │                                │
-       │ (Bob's Bundle + 1 OPK)        │                                │
-       │<──────────────────────────────│                                │
+       │ 3. PREKEY_BUNDLE_RESPONSE      │                                │
+       │ (Bob's Bundle + 1 OPK)         │                                │
+       │<────────────────────────────── │                                │
        │                                │                                │
-       │ 4. Verify SPKB signature      │                                │
-       │    with IKB                   │                                │
+       │ 4. Verify SPKB signature       │                                │
+       │    with IKB                    │                                │
        │                                │                                │
-       │ 5. Perform X3DH               │                                │
-       │    → Derive Shared Secret     │                                │
-       │    → Initialize Ratchet       │                                │
+       │ 5. Perform X3DH                │                                │
+       │    → Derive Shared Secret      │                                │
+       │    → Initialize Ratchet        │                                │
        │                                │                                │
-       │ 6. E2EE_MESSAGE               │ 7. Relay (Cannot Decrypt!)    │
-       │ (Double Ratchet Encrypted)    │                                │
-       │──────────────────────────────>│───────────────────────────────>│
+       │ 6. E2EE_MESSAGE                │ 7. Relay (Cannot Decrypt!)     │
+       │ (Double Ratchet Encrypted)     │                                │
+       │──────────────────────────────> │───────────────────────────────>│
        │                                │                                │
        │                                │                   8. Process   │
        │                                │                   X3DH Header  │
@@ -153,11 +153,11 @@ Safety Number 用于验证通信双方的身份，防止中间人攻击：
 
 ```
 ╔══════════════════════════════════════════════════════╗
-║          SAFETY NUMBER VERIFICATION                    ║
-║  Your conversation with: Bob                          ║
+║          SAFETY NUMBER VERIFICATION                  ║
+║  Your conversation with: Bob                         ║
 ╠══════════════════════════════════════════════════════╣
-║  1234 5678 9012 3456 7890 1234 5678 9012              ║
-║  3456 7890 1234 5678 9012 3456 7890 1234              ║
+║  1234 5678 9012 3456 7890 1234 5678 9012             ║
+║  3456 7890 1234 5678 9012 3456 7890 1234             ║
 ╚══════════════════════════════════════════════════════╝
 
 使用方法: 在聊天窗口输入 /safety Bob
